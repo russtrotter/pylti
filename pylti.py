@@ -11,6 +11,7 @@ import uuid
 o_sig = 'oauth_signature'
 o_key = 'oauth_consumer_key'
 o_ts = 'oauth_timestamp'
+o_nonce = 'oauth_nonce'
 lti_version = 'lti_version'
 lti_message_type = 'lti_message_type'
 launch_token_secret = 'token_secret'
@@ -53,8 +54,8 @@ class LTI(object):
         if o_sig in self.parameters:
             del self.parameters[o_sig]
         self.parameters['oauth_version'] = '1.0'
-        if 'oauth_nonce' not in self.parameters:
-            self.parameters['oauth_nonce'] = str(uuid.uuid4())
+        if o_nonce not in self.parameters:
+            self.parameters[o_nonce] = str(uuid.uuid4())
         if o_ts not in self.parameters:
             self.parameters[o_ts] = str(int(time.time()))
 
@@ -121,7 +122,6 @@ class Curl(LTI):
             self.args.prefix,
             bash_encode(' '.join(['-d {}={}'.format(k, v) for k, v in self.parameters.items()]))
         ))
-
 
 
 def main():
