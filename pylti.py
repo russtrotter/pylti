@@ -67,6 +67,13 @@ class LTI(object):
             self.token_secret = lti_input[launch_token_secret]
 
         self.url = lti_input['url']
+        if self.args.url is not None:
+            self.url = self.args.url + self.url
+
+        url = urllib.parse.urlparse(self.url)
+        qp = urllib.parse.parse_qsl(url.query)
+        self.parameters.update(qp)
+        self.url = urllib.parse.urlunparse(url[0:4] + ('', ''))
 
         sbs = '&'.join([
             self.method,
@@ -126,6 +133,7 @@ class Curl(LTI):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--url', required=False, default=None)
     parser.add_argument('--file', required=True, type=argparse.FileType(mode='r', encoding='utf-8'))
     sub = parser.add_subparsers()
 
